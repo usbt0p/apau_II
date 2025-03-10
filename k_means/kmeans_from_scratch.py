@@ -67,7 +67,7 @@ class KMeansFromScratch():
             points_as_centroids)  # initial centroids
         self.cluster_idxs = None  # cluster index of each point
 
-    def select_initial_centroids(self, points_as_centroids) -> np.ndarray:
+    def select_initial_centroids(self, points_as_centroids : bool) -> np.ndarray:
         '''Inicialización aleatoria dos centroides a partir de puntos do dataset
         Al ejecutarla, sobreescribe la inicialización ralizada por defecto en __init__.
 
@@ -100,7 +100,7 @@ class KMeansFromScratch():
         self.centroids = centroids  # override previous initiailization
         return centroids
 
-    def get_new_clusters(self, points, centroids) -> np.ndarray:
+    def get_new_clusters(self, points : np.ndarray, centroids: np.ndarray) -> np.ndarray:
         '''Assign each point to the cluster of the closest centroid.
         In case of several centroids being at the same distance, break ties by
         assigning the point to the less populated cluster.
@@ -145,7 +145,7 @@ class KMeansFromScratch():
         self.cluster_idxs = np.array(new_clusters_idx)
         return np.array(new_clusters_idx)
 
-    def update_centroids(self, cluster_idxs):
+    def update_centroids(self, cluster_idxs : np.ndarray):
         '''Set new centroid locations to the mean of their clusters.'''
 
         new_centroids = []
@@ -180,6 +180,15 @@ class KMeansFromScratch():
 
         '''
         # initailization of centroids is done upon instantiation, no need to do it again
+        if debug:
+            # show initial centroid location
+            plt.scatter(
+                k_means.data[:, 0], k_means.data[:, 1], s=SIZE, c=k_means.cluster_idxs)
+            plt.scatter(k_means.centroids[:, 0], k_means.centroids[:, 1],
+                        s=SIZE, marker='x', c='r', edgecolors='r')
+            plt.grid(visible=True)
+            plt.show()
+
         iter = 0
         while iter != self.n_iter:
             new_clusters = self.get_new_clusters(self.data, self.centroids)
@@ -212,6 +221,8 @@ class KMeansFromScratch():
         d = self.__dict__.copy()
         d['data'] = f"{type(d['data'])} of size {d['data'].size}"
         d['centroids'] = f"{type(d['centroids'])} of size {d['centroids'].size}"
+        # remove cluster_idxs from string representation
+        del d['cluster_idxs']
         return str(d)
 
 
@@ -220,7 +231,7 @@ if __name__ == "__main__":
     SIZE = 60
     features = 2
     n_centers = 4
-    n_iter = 20
+    n_iter = 10
 
     X, y = make_blobs(  # X are coords of each point, y is the cluster they where generated in
         n_samples=points, n_features=features, centers=n_centers, cluster_std=0.60, random_state=0)
@@ -228,11 +239,11 @@ if __name__ == "__main__":
     # DUDA los resultados son MUY diferentes si se inicializan los centroides con puntos del dataset
     k_means = KMeansFromScratch(
         X, n_centers, n_iter, points_as_centroids=False)
+    k_means.cluster_idxs = y # pass centroids for initial debig visualization
     print(k_means)
 
+    # Uncomment and set to False to only show the final clustering
     k_means.run(debug=True)
-
-    # Uncomment to show the final clustering
     '''# show new cluster assignation
     plt.scatter(k_means.data[:, 0], k_means.data[:, 1], s=SIZE, c=k_means.cluster_idxs)
     plt.scatter(k_means.centroids[:, 0], k_means.centroids[:, 1], s=SIZE, c='r', marker='x')
