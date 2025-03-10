@@ -168,6 +168,9 @@ class KMeansFromScratch():
         debug : bool
             If True, show the clustering process at each iteration.
             Only works for 2D data.
+        save_plt : str
+            If not empty, save the plots with the given name and format `save_plt + '_{iter}.png'`
+            Use the name to specify the path and format of the file.
 
         ### K-MEANS PSEUDOCODE:
         .. code-block:: python
