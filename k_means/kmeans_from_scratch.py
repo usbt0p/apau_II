@@ -196,6 +196,7 @@ class KMeansFromScratch():
             plt.grid(visible=True)
             plt.title('Initial centroids')
             plt.legend(['Data points', 'Centroids'])
+            if save_plt: plt.savefig(save_plt + f'_{iter}.png')
             plt.show()
 
         while iter != self.n_iter:
@@ -233,9 +234,7 @@ class KMeansFromScratch():
                 plt.title(title)
                 plt.legend(['Data points', 'Centroids'])
 
-                if save_plt:
-                    plt.savefig(save_plt + f'_{iter}.png')
-            
+                if save_plt: plt.savefig(save_plt + f'_{iter}.png')
                 plt.show()
             empty_found = False # reset flag
 
@@ -265,7 +264,7 @@ if __name__ == "__main__":
     print(k_means)
 
     # Uncomment and set to False to only show the final clustering
-    k_means.run(debug=True)
+    k_means.run(debug=True, save_plt='') # change save_plt to save the plots
     '''# show new cluster assignation
     plt.scatter(k_means.data[:, 0], k_means.data[:, 1], s=SIZE, c=k_means.cluster_idxs)
     plt.scatter(k_means.centroids[:, 0], k_means.centroids[:, 1], s=SIZE, c='r', marker='x')

@@ -58,3 +58,26 @@ El resultado es un array de índices que indican a qué cluster pertenece cada p
 - `__str__` devuelve una representación en string de la clase, mostrando los centroides y los clusters, y los datos del algoritmo.
 
 ## Resultados gráficos
+
+A continuación se muestran los resultados obtenidos con el dataset sintético. Se ha utilizado un dataset de 300 puntos con 4 clusters, y se ha ejecutado el algoritmo durante 4 iteraciones. 
+
+En las imágenes se puede observar cómo los clusters se van formando a medida que se ejecutan las iteraciones.
+
+<img src="imgs/kmeans_0.png" width="400">
+</img>
+
+<img src="imgs/kmeans_1.png" width="400">
+</img>
+
+<img src="imgs/kmeans_2.png" width="400">
+</img>
+
+<img src="imgs/kmeans_3.png" width="400">
+</img>
+
+<img src="imgs/kmeans_4.png" width="400">
+</img>
+
+En la primera iteración, los centroides se han seleccionado aleatoriamente, y los puntos se han asignado a los clusters más cercanos. En las siguientes, los centroides se actualizan, y los puntos se reasignan a los clusters. Este proceso se repite hasta que se alcanza el número de iteraciones especificado.
+
+
