@@ -1,27 +1,16 @@
-'''Implementación do algoritmo K-Means en Python. A xeito de demostración e proba, 
-usaremos o mesmo dataset sintético empregado no Jupyter notebook visto na aula.
+'''Implementation of the K-Means algorithm in Python. As a demonstration and test, 
+we will use the same synthetic dataset used in the Jupyter notebook seen in class.
 
-X, y = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
+### Features:
 
-Porén, a implementación debe funcionar correctamente con outros datasets.
-
-Requerimentos:
-
-    - Para a inicialización dos centroides, debe poderse escoller entre:
-        Inicialización aleatoria de puntos non necesariamente existentes, dentro dos límites dos datos
-        Inicialización aleatoria dos centroides a partir de puntos do dataset
-    - Medida de distancia: euclídea
-    - Se un punto está a igual distancia de dous centroides, aplícase o equilibrio de tamaño 
-        (asignación ao centroide con menor número de puntos)
-    - Criterio de converxencia: debe deterse despois de max_iter iteracións (a especificar como parámetro)
-
-Entrega: un único ficheiro comprimido contendo o código fonte en Python, 
-un documento explicativo do código e un scatter plot dos datos agrupados.
-
-No documento explicativo é necesario indicar o(s) usuario(s) de GitHub para a parte 2 da práctica.
-
-En grupos de 2 persoas ou individual. No caso de facer o traballo en parellas, 
-as dúas persoas deben facer a entrega do mesmo ficheiro.'''
+    - For centroid initialization, it should be possible to choose between:
+        Random initialization of points not necessarily existing, within the bounds of the data
+        Random initialization of centroids from dataset points
+    - Distance measure: Euclidean
+    - If a point is equidistant from two centroids, size balance is applied 
+        (assignment to the centroid with fewer points)
+    - Convergence criterion: should stop after max_iter iterations (to be specified as a parameter)
+'''
 
 import matplotlib.pyplot as plt
 import random as rand
@@ -67,9 +56,9 @@ class KMeansFromScratch():
             points_as_centroids)  # initial centroids
         self.cluster_idxs = None  # cluster index of each point
 
-    def select_initial_centroids(self, points_as_centroids : bool) -> np.ndarray:
-        '''Inicialización aleatoria dos centroides a partir de puntos do dataset
-        Al ejecutarla, sobreescribe la inicialización ralizada por defecto en __init__.
+    def select_initial_centroids(self, points_as_centroids: bool) -> np.ndarray:
+        '''Random initialization of centroids from dataset points.
+        When executed, it overrides the default initialization done in __init__.
 
         Parameters
         ----------
@@ -100,7 +89,7 @@ class KMeansFromScratch():
         self.centroids = centroids  # override previous initiailization
         return centroids
 
-    def get_new_clusters(self, points : np.ndarray, centroids: np.ndarray) -> np.ndarray:
+    def get_new_clusters(self, points: np.ndarray, centroids: np.ndarray) -> np.ndarray:
         '''Assign each point to the cluster of the closest centroid.
         In case of several centroids being at the same distance, break ties by
         assigning the point to the less populated cluster.
@@ -145,8 +134,19 @@ class KMeansFromScratch():
         self.cluster_idxs = np.array(new_clusters_idx)
         return np.array(new_clusters_idx)
 
-    def update_centroids(self, cluster_idxs : np.ndarray):
-        '''Set new centroid locations to the mean of their clusters.'''
+    def update_centroids(self, cluster_idxs: np.ndarray):
+        '''Set new centroid locations to the mean of their clusters.
+
+        Parameters
+        ----------
+        cluster_idxs : np.ndarray
+            The cluster index of each point.
+
+        Returns
+        -------
+        np.ndarray
+            The new centroids.
+        '''
 
         new_centroids = []
         for centroid_idx in range(self.k):
@@ -158,7 +158,7 @@ class KMeansFromScratch():
         return np.asarray(new_centroids)
 
     def run(self, debug=False):
-        '''Run the KMeans algorithm.
+        '''Run the KMeans algorithm. 
 
         Parameters
         ----------
@@ -185,8 +185,10 @@ class KMeansFromScratch():
             plt.scatter(
                 k_means.data[:, 0], k_means.data[:, 1], s=SIZE, c=k_means.cluster_idxs)
             plt.scatter(k_means.centroids[:, 0], k_means.centroids[:, 1],
-                        s=SIZE, marker='x', c='r', edgecolors='r')
+                        s=SIZE, marker='x', c='r')
             plt.grid(visible=True)
+            plt.title('Initial centroids')
+            plt.legend(['Data points', 'Centroids'])
             plt.show()
 
         iter = 0
@@ -215,6 +217,8 @@ class KMeansFromScratch():
                 plt.scatter(k_means.centroids[:, 0], k_means.centroids[:, 1],
                             s=SIZE, c=range(k_means.k), edgecolors='r', linewidths=2)
                 plt.grid(visible=True)
+                plt.title(f'Results for iteration {iter}')
+                plt.legend(['Data points', 'Centroids'])
                 plt.show()
 
     def __str__(self):
@@ -239,7 +243,7 @@ if __name__ == "__main__":
     # DUDA los resultados son MUY diferentes si se inicializan los centroides con puntos del dataset
     k_means = KMeansFromScratch(
         X, n_centers, n_iter, points_as_centroids=False)
-    k_means.cluster_idxs = y # pass centroids for initial debig visualization
+    k_means.cluster_idxs = y  # pass centroids for initial debug visualization
     print(k_means)
 
     # Uncomment and set to False to only show the final clustering
