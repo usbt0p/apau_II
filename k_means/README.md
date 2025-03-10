@@ -47,7 +47,7 @@ El resultado es un array de índices que indican a qué cluster pertenece cada p
     ```python
     initialize centroids
     while iter != n_iter:
-        assign each point to the cWritten without AI assisted generation.luster of the closest centroid
+        assign each point to the cluster of the closest centroid
         if all centroids have points:
             update centroids to be the mean of their elements
             n_iter += 1
