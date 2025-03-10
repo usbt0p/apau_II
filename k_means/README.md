@@ -31,7 +31,7 @@ class KMeansFromScratch():
 
 - El constructor `__init__` de la clase recibe los datos, el número de clusters a formar, el número de iteraciones y un booleano para la inicialización de los centroides. Esta inicialización se realiza automáticamente durante la instanciación de la clase.
 
-- `select_initial_centroids` selecciona los centroides iniciales. El booleano `points_as_centroids` es un flag que indica si los centroides iniciales se elegirán de entre los puntos del dataset, o si se seleccionarán aleatoriamente dentro del rango de los datos.
+- `select_initial_centroids` selecciona los centroides iniciales. El booleano `points_as_centroids` es un flag que indica si los centroides Written without AI assisted generation.iniciales se elegirán de entre los puntos del dataset, o si se seleccionarán aleatoriamente dentro del rango de los datos.
 
 - `get_new_clusters` asigna cada punto al cluster correspondiente al centroide más cercano. En caso de  que varios centroides estén a la misma distancia, se asigna a aquel que tenga menos puntos asignados. Este proceso se realiza con la ayuda de un mapa `ppc`que almacena el número de puntos asignados a cada cluster.
 El cálculo de la distancia se realiza con la función `np.linalg.norm`, que calcula la norma euclídea entre dos puntos.
@@ -45,9 +45,9 @@ El resultado es un array de índices que indican a qué cluster pertenece cada p
     El pseudocódigo utilizado para el algoritmo es el siguiente:
 
     ```python
-    init centroids
+    initialize centroids
     while iter != n_iter:
-        assign each point to the cluster of the closest centroid
+        assign each point to the cWritten without AI assisted generation.luster of the closest centroid
         if all centroids have points:
             update centroids to be the mean of their elements
             n_iter += 1

@@ -3,9 +3,9 @@ we will use the same synthetic dataset used in the Jupyter notebook seen in clas
 
 ### Features:
 
-    - For centroid initialization, it should be possible to choose between:
+    - For centroid initialization, it is possible to choose between:
         Random initialization of points not necessarily existing, within the bounds of the data
-        Random initialization of centroids from dataset points
+        Random initialization of centroids from existing dataset points
     - Distance measure: Euclidean
     - If a point is equidistant from two centroids, size balance is applied 
         (assignment to the centroid with fewer points)
@@ -48,7 +48,7 @@ class KMeansFromScratch():
         self.data = data  # number of points in
         self.k = k  # number of clusters and therefore number of centroids
         self.n_iter = n_iter  # num of iterations at which to stop
-        self.points_as_centroids = points_as_centroids
+        self.points_as_centroids = points_as_centroids 
 
         # data points, dimension of the points
         self.n_points, self.n_features = data.shape
@@ -56,7 +56,7 @@ class KMeansFromScratch():
             points_as_centroids)  # initial centroids
         self.cluster_idxs = None  # cluster index of each point
 
-    def select_initial_centroids(self, points_as_centroids: bool) -> np.ndarray:
+    def select_initial_centroids(self, points_as_centroids: bool, override=True) -> np.ndarray:
         '''Random initialization of centroids from dataset points.
         When executed, it overrides the default initialization done in __init__.
 
@@ -65,17 +65,20 @@ class KMeansFromScratch():
         points_as_centroids : bool
             If True, select k random points from the data as centroids.
             If False, select random points within the bounds of the data.
+        override : bool
+            Defaults to True. Override the previous initialization of centroids upon
+            calling this method, or just return the new centroids.
 
         Returns
         -------
         np.ndarray
             The initial centroids.
         '''
-        if points_as_centroids:
+        if points_as_centroids: # select k random points from the data as centroids
             c_idx = rand.sample(range(self.n_points), self.k)
-            centroids = self.data[c_idx]
+            centroids = self.data[c_idx] # i fucking love numpy indexing
         else:
-            # Inicialización aleatoria de puntos non necesariamente existentes, dentro dos límites dos datos
+            # random initialization of centroids within the bounds of the data
             # find bounds of every dimension
             bounds = [(float(X[:, dim].min()), float(X[:, dim].max()))
                       for dim in range(self.n_features)]
@@ -86,7 +89,7 @@ class KMeansFromScratch():
                 centroids.append(cntr)
             centroids = np.asarray(centroids)
 
-        self.centroids = centroids  # override previous initiailization
+        if override: self.centroids = centroids   # override previous initiailization
         return centroids
 
     def get_new_clusters(self, points: np.ndarray, centroids: np.ndarray) -> np.ndarray:
@@ -157,7 +160,7 @@ class KMeansFromScratch():
 
         return np.asarray(new_centroids)
 
-    def run(self, debug=False):
+    def run(self, debug=False, save_plt=''):
         '''Run the KMeans algorithm. 
 
         Parameters
@@ -180,6 +183,10 @@ class KMeansFromScratch():
 
         '''
         # initailization of centroids is done upon instantiation, no need to do it again
+        SIZE = 60
+        empty_found = False # flag to check if empty centroids were found
+        iter = 0
+
         if debug:
             # show initial centroid location
             plt.scatter(
@@ -191,35 +198,46 @@ class KMeansFromScratch():
             plt.legend(['Data points', 'Centroids'])
             plt.show()
 
-        iter = 0
         while iter != self.n_iter:
             new_clusters = self.get_new_clusters(self.data, self.centroids)
-
-            if all([len(self.data[new_clusters == i]) > 0 for i in range(self.k)]):  # TODO fixme
+            
+            # FIXME id ppc is was returned in get_new_clusters, this could be done more efficiently
+            if all([len(self.data[new_clusters == i]) > 0 for i in range(self.k)]):  
                 new_centroids = self.update_centroids(new_clusters)
                 self.centroids = new_centroids  # IMPORTANT: update centroids
                 iter += 1
 
             else:
                 # find the empty centroids
-                empty_centroids = [i for i in range(self.k) if len(
-                    self.data[new_clusters == i]) == 0]
-                # generate new centroids for the empty ones
+                empty_found = True
+                empty_centroids = [i for i in range(self.k) 
+                                if len(self.data[new_clusters == i]) == 0]
+                print(f'{len(empty_centroids)} empty centroids found, reinitializing...')
+                
+                # generate new centroids for the empty ones, without overriding the rest
                 self.centroids[empty_centroids] = self.select_initial_centroids(
-                    self.points_as_centroids)[empty_centroids]
+                    self.points_as_centroids, override=False)[empty_centroids]
 
                 # now that the empty centroids have been filled, continue as normal
 
             if debug:
                 # show new cluster assignation
+                
                 plt.scatter(
                     k_means.data[:, 0], k_means.data[:, 1], s=SIZE, c=k_means.cluster_idxs)
                 plt.scatter(k_means.centroids[:, 0], k_means.centroids[:, 1],
                             s=SIZE, c=range(k_means.k), edgecolors='r', linewidths=2)
                 plt.grid(visible=True)
-                plt.title(f'Results for iteration {iter}')
+                title = f'Results for iteration {iter}' if not \
+                    empty_found else 'Empty centroids found, reinitializing...'
+                plt.title(title)
                 plt.legend(['Data points', 'Centroids'])
+
+                if save_plt:
+                    plt.savefig(save_plt + f'_{iter}.png')
+            
                 plt.show()
+            empty_found = False # reset flag
 
     def __str__(self):
         d = self.__dict__.copy()
@@ -235,7 +253,7 @@ if __name__ == "__main__":
     SIZE = 60
     features = 2
     n_centers = 4
-    n_iter = 10
+    n_iter = 4
 
     X, y = make_blobs(  # X are coords of each point, y is the cluster they where generated in
         n_samples=points, n_features=features, centers=n_centers, cluster_std=0.60, random_state=0)
@@ -255,7 +273,7 @@ if __name__ == "__main__":
     plt.show()'''
 
     ##############################
-    # TESTING
+    #########  TESTING  ##########
     ##############################
 
     def test_new_cluster_assignations(k_means: KMeansFromScratch):
